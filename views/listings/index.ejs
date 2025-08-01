@@ -124,6 +124,17 @@
             <%  } %>
     </div>
 
+<form id="filterForm" method="GET" action="/listings">
+  <div id="filters" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+    <% let categories = ["Trending", "Rooms", "Iconic Cities", "Mountains", "Castles", "Amazing Pools", "Camping", "Farms", "Arctic", "Domes", "Boats"]; %>
+    <% categories.forEach(category => { %>
+      <div class="filter <%= selectedCategories.includes(category) ? 'active' : '' %>" data-category="<%= category %>">
+        <p><%= category %></p>
+      </div>
+    <% }) %>
+  </div>
+</form>
+
     <script>
       let taxSwitch = document.getElementById("flexSwitchCheckDefault");
       taxSwitch.addEventListener("click", () => {
@@ -137,4 +148,39 @@
           
         }
       });
+
+ const filters = document.querySelectorAll(".filter");
+  const form = document.getElementById("filterForm");
+
+  let selectedFilters = new Set(<%- JSON.stringify(selectedCategories) %>);
+
+  function updateFormAndSubmit() {
+    document.querySelectorAll('input[name="category"]').forEach(el => el.remove());
+
+    selectedFilters.forEach(category => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "category";
+      input.value = category;
+      form.appendChild(input);
+    });
+
+    form.submit();
+  }
+
+  filters.forEach(filter => {
+    filter.addEventListener("click", () => {
+      const category = filter.dataset.category;
+
+      if (selectedFilters.has(category)) {
+        selectedFilters.delete(category);
+        filter.classList.remove("active");
+      } else {
+        selectedFilters.add(category);
+        filter.classList.add("active");
+      }
+
+      updateFormAndSubmit();
+    });
+  });
     </script>
