@@ -75,3 +75,21 @@ module.exports.destroyListing = async (req, res)=> {
     req.flash("success", "Listing Deleted!");
     res.redirect("/listings");
 }
+module.exports.index = async (req, res) => {
+    const { category } = req.query;
+    let allListings;
+
+    const selectedCategories = Array.isArray(category)
+        ? category
+        : category
+        ? [category]
+        : [];
+
+    if (selectedCategories.length > 0) {
+        allListings = await Listing.find({ category: { $in: selectedCategories } });
+    } else {
+        allListings = await Listing.find({});
+    }
+
+    res.render("listings/index.ejs", { allListings, selectedCategories });
+};
